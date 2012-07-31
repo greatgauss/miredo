@@ -49,7 +49,7 @@ int teredo_startup (bool use_client)
 		return -1;
 #endif
 
-	if (teredo_init_HMAC () == 0) 
+	//if (teredo_init_HMAC () == 0) 
 	{
 		LOGD("teredo_startup return 0\n");
 		return 0;
