@@ -52,6 +52,8 @@
 #endif
 
 #include "miredo.h"
+#define LOG_TAG "main"
+#include "debug.h"
 
 /*
  * RETURN VALUES:
@@ -63,7 +65,7 @@
 static int
 quick_usage (const char *path)
 {
-	fprintf (stderr, _("Try \"%s -h | more\" for more information.\n"),
+	LOGE("Try \"%s -h | more\" for more information.\n",
 	         path);
 	return 2;
 }
@@ -110,9 +112,9 @@ miredo_version (void)
 static int
 error_dup (int opt, const char *already, const char *additionnal)
 {
-	fprintf (stderr, _(
+	LOGE(
 "Duplicate parameter \"%s\" for option -%c\n"
-"would override previous value \"%s\".\n"),
+"would override previous value \"%s\".\n",
 		 additionnal, opt, already);
 	return 2;
 }
@@ -122,8 +124,8 @@ error_dup (int opt, const char *already, const char *additionnal)
 static int
 error_qty (int opt, const char *qty)
 {
-	fprintf (stderr, _(
-"Invalid number (or capacity exceeded) \"%s\" for option -%c\n"), qty, opt);
+	LOGE(
+"Invalid number (or capacity exceeded) \"%s\" for option -%c\n", qty, opt);
 	return 2;
 }
 #endif
@@ -132,7 +134,7 @@ error_qty (int opt, const char *qty)
 static int
 error_extra (const char *extra)
 {
-	fprintf (stderr, _("%s: unexpected extra parameter\n"), extra);
+	LOGE("%s: unexpected extra parameter\n", extra);
 	return 2;
 }
 
@@ -140,7 +142,7 @@ error_extra (const char *extra)
 static int
 error_errno (const char *str)
 {
-	fprintf (stderr, _("Error (%s): %s\n"), str, strerror (errno));
+	LOGE("Error (%s): %s\n", str, strerror (errno));
 	return -1;
 }
 
@@ -425,8 +427,7 @@ int miredo_main (int argc, char *argv[])
 	/* Check if config file and chroot dir are present */
 	if ((servername == NULL) && access (conffile, R_OK))
 	{
-		fprintf (stderr, _("Reading configuration from %s: %s\n"),
-				conffile, strerror (errno));
+		LOGE("Reading configuration from %s: %s\n", conffile, strerror (errno));
 		return 1;
 	}
 
@@ -473,11 +474,12 @@ int miredo_main (int argc, char *argv[])
 	if (!flags.foreground)
 	{
 		pid_t pid = fork ();
+		LOGD("!flags.foregroud\n");
 
 		switch (pid)
 		{
 			case -1:
-				fprintf (stderr, _("Error (%s): %s\n"), "fork", strerror (errno));
+				LOGE("Error (%s): %s\n", "fork", strerror (errno));
 				return 1;
 
 			case 0:
@@ -500,12 +502,12 @@ int miredo_main (int argc, char *argv[])
 	int fd = create_pidfile (pidfile);
 	if (fd == -1)
 	{
-		fprintf (stderr, _("Cannot create PID file %s:\n %s\n"),
+		LOGE("Cannot create PID file %s:\n %s\n",
 		         pidfile, strerror (errno));
 		if ((errno == EAGAIN) || (errno == EACCES))
-			fprintf (stderr, "%s\n",
-			         _("Please make sure another instance of the program is "
-				   "not already running."));
+			LOGE( "%s\n",
+			         "Please make sure another instance of the program is "
+				   "not already running.");
 		exit (1);
 	}
 
@@ -526,6 +528,7 @@ int miredo_main (int argc, char *argv[])
 	/*
 	 * Run
 	 */
+	LOGD("call miredo()");
 	c = miredo (conffile, servername, fd);
 
 	(void)unlink (pidfile);

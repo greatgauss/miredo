@@ -37,6 +37,7 @@
 #include <errno.h>
 
 #include "security.h"
+#define LOG_TAG "security"
 #include "debug.h"
 #include "md5.h"
 

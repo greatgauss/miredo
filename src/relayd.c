@@ -96,6 +96,7 @@ static int icmp6_fd = -1;
 
 static int miredo_init (bool client)
 {
+	LOGD("miredo_init(client = %d)\n", client);
 	if (teredo_startup (client))
 		return -1;
 
@@ -105,6 +106,7 @@ static int miredo_init (bool client)
 	if (icmp6_fd == -1)
 		return -1;
 
+	LOGD("Create socket (AF_INET6, SOCK_RAW, IPPROTO_ICMPV6) OK\n");
 	miredo_setup_nonblock_fd (icmp6_fd);
 
 	setsockopt (icmp6_fd, SOL_IPV6, IPV6_CHECKSUM, &(int){2}, sizeof (int));
@@ -221,6 +223,7 @@ create_dynamic_tunnel (const char *ifname, int *pfd)
 	snprintf (ifindex, sizeof (ifindex), "%X", tun6_getId (tunnel));
 
 	static const char path[] = PKGLIBDIR"/miredo-privproc";
+
 	pid_t pid;
 	switch (pid = fork ())
 	{
@@ -239,6 +242,7 @@ create_dynamic_tunnel (const char *ifname, int *pfd)
 	}
 	close (fd[0]);
 	*pfd = fd[1];
+
 	return tunnel;
 error:
 	tun6_destroy (tunnel);
@@ -318,6 +322,7 @@ miredo_down_callback (void *data)
 static int
 setup_client (teredo_tunnel *client, const char *server, const char *server2)
 {
+	LOGD("setup_client()");
 	teredo_set_state_cb (client, miredo_up_callback, miredo_down_callback);
 	return teredo_set_client_mode (client, server, server2);
 }
@@ -424,6 +429,7 @@ static int
 run_tunnel (miredo_tunnel *tunnel)
 {
 	pthread_t encap_th;
+	LOGD("run_tunnel");
 	if (teredo_run_async (tunnel->relay)
 	 || pthread_create (&encap_th, NULL, miredo_encap_thread, tunnel))
 		return -1;
@@ -559,12 +565,20 @@ relay_run (miredo_conf *conf, const char *server_name)
 		return -1;
 	}
 
-	if (miredo_init ((mode & TEREDO_CLIENT) != 0))
+	LOGD("+++Create IPv6 tunnel OK+++");
+	if (miredo_init ((mode & TEREDO_CLIENT) != 0)) {
 		syslog (LOG_ALERT, _("Miredo setup failure: %s"),
-		        _("libteredo cannot be initialized"));
+                       _("libteredo cannot be initialized"));
+		LOGE("Miredo setup failure: %s",  "libteredo cannot be initialized");
+	}
 	else
 	{
-		if (drop_privileges () == 0)
+		int ret;
+		LOGD("before drop_privileges");
+		ret = drop_privileges ();
+
+		LOGD("drop_privileges: %d",  ret);
+		if (ret == 0)
 		{
 			teredo_tunnel *relay = teredo_create (bind_ip, bind_port);
 			if (relay != NULL)
@@ -574,6 +588,7 @@ relay_run (miredo_conf *conf, const char *server_name)
 				teredo_set_recv_callback (relay, miredo_recv_callback);
 				teredo_set_icmpv6_callback (relay, miredo_icmp6_callback);
 
+				LOGD("teredo_create OK");
 				retval = (mode & TEREDO_CLIENT)
 					? setup_client (relay, server_name, server_name2)
 					: setup_relay (relay, prefix.teredo.prefix, cone);

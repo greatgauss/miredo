@@ -31,21 +31,30 @@
 #include <inttypes.h>
 #include "security.h"
 #include "tunnel.h"
+#define LOG_TAG "init"
+#include "debug.h"
 
 
 int teredo_startup (bool use_client)
 {
 	(void)bindtextdomain (PACKAGE_NAME, LOCALEDIR);
+	LOGD("teredo_startup\n");
 
 #ifdef MIREDO_TEREDO_CLIENT
+		LOGD("teredo_startup MIREDO_TEREDO_CLIENT\n");
 	(void)use_client;
 #else
+		LOGD("teredo_startup !MIREDO_TEREDO_CLIENT\n");
 	if (use_client)
 		return -1;
 #endif
 
-	if (teredo_init_HMAC () == 0)
+	if (teredo_init_HMAC () == 0) 
+	{
+		LOGD("teredo_startup return 0\n");
 		return 0;
+	}
+	LOGD("teredo_startup return -1\n");
 	return -1;
 }
 

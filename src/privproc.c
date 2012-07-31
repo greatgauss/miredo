@@ -102,6 +102,7 @@ int main (int argc, char *argv[])
 {
 	openlog ("miredo-privproc", LOG_PID | LOG_PERROR, LOG_DAEMON);
 
+	LOGD("main\n");
 	if (argc != 2)
 		exit (1);
 
@@ -150,6 +151,7 @@ int main (int argc, char *argv[])
 		if (recv (0, &cfg, sizeof (cfg), MSG_WAITALL) != sizeof (cfg))
 			break;
 
+		LOGD("recved new config\n");
 		/* Sanity checks */
 		if ((cfg.addr.s6_addr[0] == 0xff) || (cfg.mtu < 1280))
 			break;
