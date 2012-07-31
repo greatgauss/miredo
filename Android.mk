@@ -73,6 +73,7 @@ LOCAL_CFLAGS := \
         -DPACKAGE_VERSION="\"1.2.4\""
 
 LOCAL_SHARED_LIBRARIES := \
+                        libcutils \
                         libmiredo 
 
 LOCAL_MODULE = miredo 

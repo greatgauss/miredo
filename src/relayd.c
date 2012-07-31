@@ -37,6 +37,12 @@
 #include <sys/wait.h> // wait()
 #include <signal.h> // sigemptyset()
 #include <syslog.h>
+#include <android/log.h>
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "MIREDO", __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "MIREDO", __VA_ARGS__)
+#define syslog(prio, fmt...) \
+    __android_log_print(prio, "MIREDO", fmt)
+
 #include <pthread.h>
 
 #include <sys/socket.h>
@@ -219,7 +225,8 @@ create_dynamic_tunnel (const char *ifname, int *pfd)
 	snprintf (ifindex, sizeof (ifindex), "%X", tun6_getId (tunnel));
 
 	static const char path[] = PKGLIBDIR"/miredo-privproc";
-	switch (fork ())
+	pid_t pid;
+	switch (pid = fork ())
 	{
 		case -1:
 			close (fd[0]);
@@ -227,6 +234,7 @@ create_dynamic_tunnel (const char *ifname, int *pfd)
 			goto error;
 
 		case 0:
+			LOGD("execl(%s)\r\n", path); 
 			if (dup2 (fd[0], 0) == 0 && dup2 (fd[0], 1) == 1)
 				execl (path, path, ifindex, (char *)NULL);
 
@@ -286,7 +294,7 @@ miredo_up_callback (void *data, const struct in6_addr *addr, uint16_t mtu)
 {
 	char str[INET6_ADDRSTRLEN];
 
-	syslog (LOG_NOTICE, _("Teredo pseudo-tunnel started"));
+	syslog (LOG_NOTICE, "Teredo pseudo-tunnel started");
 	if (inet_ntop (AF_INET6, addr, str, sizeof (str)) != NULL)
 		syslog (LOG_INFO, _(" (address: %s, MTU: %"PRIu16")"),
 		        str, mtu);
@@ -307,7 +315,7 @@ miredo_down_callback (void *data)
 
 	configure_tunnel (((miredo_tunnel *)data)->priv_fd, &in6addr_any,
 	                         1280);
-	syslog (LOG_NOTICE, _("Teredo pseudo-tunnel stopped"));
+	syslog (LOG_NOTICE, "Teredo pseudo-tunnel stopped");
 }
 
 
@@ -448,7 +456,7 @@ relay_run (miredo_conf *conf, const char *server_name)
 	int mode = TEREDO_CLIENT;
 	if (!ParseRelayType (conf, "RelayType", &mode))
 	{
-		syslog (LOG_ALERT, _("Fatal configuration error"));
+		syslog (LOG_ALERT, "Fatal configuration error");
 		return -2;
 	}
 
@@ -467,8 +475,8 @@ relay_run (miredo_conf *conf, const char *server_name)
 			char *name = miredo_conf_get (conf, "ServerAddress", NULL);
 			if (name == NULL)
 			{
-				syslog (LOG_ALERT, _("Server address not specified"));
-				syslog (LOG_ALERT, _("Fatal configuration error"));
+				syslog (LOG_ALERT, "Server address not specified");
+				syslog (LOG_ALERT, "Fatal configuration error");
 				return -2;
 			}
 			strlcpy (namebuf, name, sizeof (namebuf));
@@ -499,7 +507,7 @@ relay_run (miredo_conf *conf, const char *server_name)
 		                                      &prefix.teredo.prefix)
 		 || !miredo_conf_get_int16 (conf, "InterfaceMTU", &mtu, NULL))
 		{
-			syslog (LOG_ALERT, _("Fatal configuration error"));
+			syslog (LOG_ALERT, "Fatal configuration error");
 			return -2;
 		}
 	}
@@ -523,7 +531,7 @@ relay_run (miredo_conf *conf, const char *server_name)
 	if (!miredo_conf_parse_IPv4 (conf, "BindAddress", &bind_ip)
 	 || !miredo_conf_get_int16 (conf, "BindPort", &bind_port, NULL))
 	{
-		syslog (LOG_ALERT, _("Fatal configuration error"));
+		syslog (LOG_ALERT, "Fatal configuration error");
 		return -2;
 	}
 
