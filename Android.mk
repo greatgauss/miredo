@@ -31,12 +31,14 @@ LOCAL_CFLAGS := \
 	-DLOCALEDIR="\"/system/miredo\"" \
 	-DSYSCONFDIR="\"/system/miredo\"" \
 	-DLOCALSTATEDIR="\"/system/miredo\"" \
-	-DPKGLIBDIR="\"/system/lib\"" \
 	-DPACKAGE_NAME="\"miredo\"" \
 	-DPACKAGE_VERSION="\"1.2.4\""
 
 LOCAL_LDLIBS += -lpthread
 
+LOCAL_SHARED_LIBRARIES := \
+                        libcutils
+ 
 LOCAL_C_INCLUDES := \
 		$(LOCAL_PATH) \
 		$(LOCAL_PATH)/include \
@@ -67,8 +69,8 @@ LOCAL_CFLAGS := \
         -DHAVE_CONFIG_H \
         -DLOCALEDIR="\"/system/miredo\"" \
         -DSYSCONFDIR="\"/system/miredo\"" \
+	-DPKGLIBDIR="\"/system/bin\"" \
         -DLOCALSTATEDIR="\"/system/miredo\"" \
-        -DPKGLIBDIR="\"/system/lib\"" \
         -DPACKAGE_NAME="\"miredo\"" \
         -DPACKAGE_VERSION="\"1.2.4\""
 
@@ -97,11 +99,11 @@ LOCAL_CFLAGS := \
         -DLOCALEDIR="\"/system/miredo\"" \
         -DSYSCONFDIR="\"/system/miredo\"" \
         -DLOCALSTATEDIR="\"/system/miredo\"" \
-        -DPKGLIBDIR="\"/system/lib\"" \
         -DPACKAGE_NAME="\"miredo\"" \
         -DPACKAGE_VERSION="\"1.2.4\""
 
 LOCAL_SHARED_LIBRARIES := \
+                        libcutils \
                         libmiredo 
 
 LOCAL_MODULE = miredo-privproc 

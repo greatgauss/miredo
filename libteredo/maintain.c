@@ -41,7 +41,6 @@
 #include <netinet/in.h> /* struct in6_addr */
 #include <netinet/ip6.h> /* struct ip6_hdr */
 #include <netdb.h> /* getaddrinfo(), gai_strerror() */
-#include <syslog.h>
 #include <stdlib.h> /* malloc(), free() */
 #include <errno.h> /* EINTR */
 #include <pthread.h>
@@ -55,6 +54,8 @@
 #include "security.h"
 #include "maintain.h"
 #include "v4global.h" // is_ipv4_global_unicast()
+
+#define LOG_TAG "maintain"
 #include "debug.h"
 
 static inline void gettime (struct timespec *now)
@@ -141,7 +142,7 @@ maintenance_recv (const teredo_packet *restrict packet, uint32_t server_ip,
 	/* TODO: fail instead of ignoring the packet? */
 	if (packet->auth_fail)
 	{
-		syslog (LOG_ERR, _("Authentication with server failed."));
+		syslog (LOG_ERR, "Authentication with server failed.");
 		return EACCES;
 	}
 
@@ -206,7 +207,7 @@ checkTimeDrift (struct timespec *ts)
 	 || ((now.tv_sec == ts->tv_sec) && (now.tv_nsec > ts->tv_nsec)))
 	{
 		/* process stopped, CPU starved, or (ACPI, APM, etc) suspend */
-		syslog (LOG_WARNING, _("Too much time drift. Resynchronizing."));
+		syslog (LOG_WARNING, "Too much time drift. Resynchronizing.");
 		*ts = now;
 		return false;
 	}
@@ -277,7 +278,7 @@ void maintenance_thread (teredo_maintenance *m)
 			if (!is_ipv4_global_unicast (server_ip))
 			{
 				syslog (LOG_ERR,
-				        _("Teredo server has a non global IPv4 address."));
+				        "Teredo server has a non global IPv4 address.");
 			}
 			else
 			{
@@ -340,13 +341,13 @@ void maintenance_thread (teredo_maintenance *m)
 				/* No response from server */
 				if (last_error != TERR_BLACKHOLE)
 				{
-					syslog (LOG_INFO, _("No reply from Teredo server"));
+					syslog (LOG_INFO, "No reply from Teredo server");
 					last_error = TERR_BLACKHOLE;
 				}
 
 				if (c_state->up)
 				{
-					syslog (LOG_NOTICE, _("Lost Teredo connectivity"));
+					syslog (LOG_NOTICE, "Lost Teredo connectivity");
 					c_state->up = false;
 					m->state.cb (c_state, m->state.opaque);
 					server_ip = 0;
@@ -376,7 +377,7 @@ void maintenance_thread (teredo_maintenance *m)
 			{
 				memcpy(c_state, &newst, sizeof (*c_state));
 
-				syslog (LOG_NOTICE, _("New Teredo address/MTU"));
+				syslog (LOG_NOTICE, "New Teredo address/MTU");
 				m->state.cb (c_state, m->state.opaque);
 			}
 

@@ -38,13 +38,14 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <sys/uio.h> // readv() & writev()
-#include <syslog.h>
 #include <errno.h>
 #include <netinet/in.h> // htons(), struct in6_addr
 
 #include <sys/socket.h> // socket(AF_INET6, SOCK_DGRAM, 0)
 
 #include <net/if.h> // struct ifreq, if_nametoindex(), if_indextoname()
+#define LOG_TAG "tun"
+#include "debug.h"
 
 #if defined (__linux__)
 /*
@@ -187,8 +188,8 @@ tun6 *tun6_create (const char *req_name)
 		syslog (LOG_ERR, _("Tunneling driver error (%s): %m"), "TUNSETIFF");
 		if (errno == EBUSY)
 			syslog (LOG_INFO,
-			        _("Please make sure another instance of the program is "
-	        	          "not already running."));
+			        "Please make sure another instance of the program is "
+	        	          "not already running.");
 		goto error;
 	}
 

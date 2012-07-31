@@ -36,7 +36,6 @@
 #include <netinet/in.h>
 #include <netinet/ip6.h> /* struct ip6_hdr */
 #include <netinet/icmp6.h> /* router solicication */
-#include <syslog.h>
 #include <sys/uio.h>
 
 #include "teredo.h"
@@ -48,6 +47,8 @@
 
 #include "packets.h"
 #include "checksum.h"
+#define LOG_TAG "packets"
+#include "debug.h"
 
 
 int
@@ -215,7 +216,7 @@ teredo_parse_ra (const teredo_packet *restrict packet,
 			if (newaddr->teredo.server_ip != 0)
 			{
 				/* The Teredo specification excludes multiple prefixes */
-				syslog (LOG_ERR, _("Multiple Teredo prefixes received"));
+				syslog (LOG_ERR, "Multiple Teredo prefixes received");
 				return -1;
 			}
 

@@ -28,7 +28,6 @@
 #include <errno.h>
 #include <inttypes.h>
 #include <stdio.h>
-#include <syslog.h>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -55,6 +54,8 @@
 #include <libteredo/teredo.h>
 
 #include "miredo.h"
+#define LOG_TAG "privproc"
+#include "debug.h"
 #include "privproc.h"
 
 static const char script_path[] = SYSCONFDIR"/miredo/client-hook";

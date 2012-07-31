@@ -36,12 +36,6 @@
 #include <fcntl.h>
 #include <sys/wait.h> // wait()
 #include <signal.h> // sigemptyset()
-#include <syslog.h>
-#include <android/log.h>
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "MIREDO", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "MIREDO", __VA_ARGS__)
-#define syslog(prio, fmt...) \
-    __android_log_print(prio, "MIREDO", fmt)
 
 #include <pthread.h>
 
@@ -72,6 +66,8 @@
 #include "privproc.h"
 #include "miredo.h"
 #include "conf.h"
+#define LOG_TAG "relayd"
+#include "debug.h"
 
 static void miredo_setup_fd (int fd);
 static void miredo_setup_nonblock_fd (int fd);

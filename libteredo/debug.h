@@ -28,8 +28,15 @@
 #  define LIBTEREDO_NORETURN
 # endif
 
-# ifndef NDEBUG
 #  include <syslog.h>
+#include <android/log.h>
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "MIREDO:" LOG_TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "MIREDO:" LOG_TAG, __VA_ARGS__)
+#define syslog(prio, fmt...) \
+    __android_log_print(prio, "MIREDO:" LOG_TAG, fmt)
+
+
+# ifndef NDEBUG
 #  include <stdarg.h>
 
 static inline void debug (const char *str, ...)

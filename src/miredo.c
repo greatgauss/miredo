@@ -39,7 +39,6 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <syslog.h>
 #include <unistd.h> // uid_t
 #include <sys/wait.h> // waitpid()
 #ifdef HAVE_SYS_CAPABILITY_H
@@ -51,6 +50,8 @@
 #endif
 
 #include "miredo.h"
+#define LOG_TAG "miredo"
+#include "debug.h"
 #include "conf.h"
 
 uid_t unpriv_uid = 0;
@@ -144,7 +145,7 @@ miredo (const char *confpath, const char *server_name, int pidfd)
 
 		closelog ();
 		openlog (miredo_name, LOG_PID | LOG_PERROR, facility);
-		syslog (LOG_INFO, _("Starting..."));
+		syslog (LOG_INFO, "Starting...");
 
 		// Starts the main miredo process
 		pid_t pid = fork ();
