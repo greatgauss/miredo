@@ -17,7 +17,6 @@ LOCAL_SRC_FILES:= \
 	libteredo/security.c \
 	libteredo/clock.c \
 	libteredo/relay.c \
-	libteredo/mire.c \
 	libteredo/stub.c \
 	libteredo/init.c \
 	libteredo/md5.c \
@@ -53,6 +52,8 @@ include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES :=  \
+                src/main.c \
+                src/relayd.c \
                 src/miredo.c
 
 LOCAL_C_INCLUDES := \

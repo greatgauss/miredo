@@ -406,8 +406,8 @@ static LIBTEREDO_NORETURN void *miredo_encap_thread (void *d)
 			teredo_transmit (relay, &pbuf.ip6, val);
 			//pthread_setcancelstate (PTHREAD_CANCEL_ENABLE, NULL);
 		}
-		else
-			pthread_testcancel ();
+		//else
+			//pthread_testcancel ();
 	}
 }
 
@@ -429,7 +429,7 @@ run_tunnel (miredo_tunnel *tunnel)
 	pthread_sigmask (SIG_BLOCK, &dummyset, &set);
 	while (sigwait (&set, &(int){ 0 }));
 
-	pthread_cancel (encap_th);
+	//pthread_cancel (encap_th);
 	pthread_join (encap_th, NULL);
 	return 0;
 }

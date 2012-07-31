@@ -160,7 +160,7 @@ tun6 *tun6_create (const char *req_name)
 	/*
 	 * TUNTAP (Linux) tunnel driver initialization
 	 */
-	static const char tundev[] = "/dev/net/tun";
+	static const char tundev[] = "/dev/tun";
 	struct ifreq req =
 	{
 		.ifr_flags = IFF_TUN
