@@ -1,11 +1,11 @@
-#! /bin/sh
+#! /system/bin/sh
 #
 # Miredo client hook script for Linux/iproute2
 # Copyright © 2007 Rémi Denis-Courmont.
 # Distributed under the terms of the GNU General Public License version 2.
 
 # Linux iproute2 path:
-IP="/sbin/ip"
+IP="/system/bin/ip"
 
 # Linux default route default metric is 1024
 # (we put 1029 so that Teredo is used as a last resort):
