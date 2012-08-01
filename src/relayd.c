@@ -574,7 +574,9 @@ relay_run (miredo_conf *conf, const char *server_name)
 	else
 	{
 		int ret;
-		ret = drop_privileges ();
+
+		/*if call drop_privileges(), create socket failed: Permission denied*/
+		ret = 0; //drop_privileges ();
 
 		LOGD("drop_privileges: %d",  ret);
 		if (ret == 0)
