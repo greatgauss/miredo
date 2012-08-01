@@ -472,9 +472,12 @@ int miredo_main (int argc, char *argv[])
 		pipes[0] = pipes[1] = -1;
 
 	if (!flags.foreground)
+		LOGD("!flags.foreground\n");
+	else
+		LOGD("flags.foreground\n");
+	if (!flags.foreground)
 	{
 		pid_t pid = fork ();
-		LOGD("!flags.foregroud\n");
 
 		switch (pid)
 		{

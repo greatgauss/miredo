@@ -47,6 +47,8 @@
 
 #include "teredo.h"
 #include "teredo-udp.h"
+#define LOG_TAG "teredo"
+#include "debug.h"
 
 /*
  * Teredo addresses
@@ -77,13 +79,16 @@ int teredo_socket (uint32_t bind_ip, uint16_t port)
 	};
 
 	int fd = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (fd == -1)
+	if (fd == -1) {
+		LOGD("teredo_socket: create socket failed: %s(%d)", strerror (errno), errno);
 		return -1; // failure
-
+	}
+    
 	fcntl (fd, F_SETFD, FD_CLOEXEC);
 
 	if (bind (fd, (struct sockaddr *)&myaddr, sizeof (myaddr)))
 	{
+		LOGD("teredo_socket: bind failed");
 		close (fd);
 		return -1;
 	}

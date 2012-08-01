@@ -50,6 +50,8 @@
 #include "debug.h"
 #include "clock.h"
 #include "peerlist.h"
+#define LOG_TAG "peerlist"
+#include "debug.h"
 
 /*
  * Packets queueing
@@ -302,6 +304,7 @@ teredo_peerlist *teredo_list_create (unsigned max, unsigned expiration)
 
 	if (pthread_create (&l->gc, NULL, garbage_collector, l))
 	{
+		LOGD("teredo_list_create: pthread_create failed");
 		pthread_mutex_destroy (&l->lock);
 		free (l);
 		return NULL;

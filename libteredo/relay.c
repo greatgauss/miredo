@@ -54,6 +54,7 @@
 #ifdef MIREDO_TEREDO_CLIENT
 # include "security.h"
 #endif
+#define LOG_TAG "relay"
 #include "debug.h"
 #ifndef NDEBUG
 # include <sys/socket.h>
@@ -911,9 +912,13 @@ teredo_tunnel *teredo_create (uint32_t ipv4, uint16_t port)
 			(void)pthread_mutex_init (&tunnel->ratelimit.lock, NULL);
 			return tunnel;
 		}
+		else
+			LOGD("teredo_list_create() failed");
 		teredo_close (tunnel->fd);
 	}
-
+	else
+		LOGD("teredo_socket(%d, %d) failed", ipv4, port);
+    
 	free (tunnel);
 	return NULL;
 }

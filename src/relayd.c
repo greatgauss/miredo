@@ -565,7 +565,7 @@ relay_run (miredo_conf *conf, const char *server_name)
 		return -1;
 	}
 
-	LOGD("+++Create IPv6 tunnel OK+++");
+	LOGD("Create IPv6 tunnel OK");
 	if (miredo_init ((mode & TEREDO_CLIENT) != 0)) {
 		syslog (LOG_ALERT, _("Miredo setup failure: %s"),
                        _("libteredo cannot be initialized"));
@@ -574,7 +574,6 @@ relay_run (miredo_conf *conf, const char *server_name)
 	else
 	{
 		int ret;
-		LOGD("before drop_privileges");
 		ret = drop_privileges ();
 
 		LOGD("drop_privileges: %d",  ret);
@@ -600,6 +599,8 @@ relay_run (miredo_conf *conf, const char *server_name)
 					retval = run_tunnel (&data);
 				teredo_destroy (relay);
 			}
+			else
+				LOGD("teredo_create failed");
 
 			if (retval)
 				syslog (LOG_ALERT, _("Miredo setup failure: %s"),
@@ -635,6 +636,7 @@ static void miredo_setup_nonblock_fd (int fd)
 
 int main (int argc, char *argv[])
 {
+        pid_t pid;
 #ifdef HAVE_LIBCAP
 	static const cap_value_t capv[] =
 	{
@@ -650,6 +652,9 @@ int main (int argc, char *argv[])
 	miredo_diagnose = relay_diagnose;
 	miredo_run = relay_run;
 
-	return miredo_main (argc, argv);
+	miredo_main (argc, argv);
+	pid = getpid();
+	LOGD("Process(#%d) Exits\n", pid);
+        return 0;
 }
 

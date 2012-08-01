@@ -38,13 +38,9 @@
 int teredo_startup (bool use_client)
 {
 	(void)bindtextdomain (PACKAGE_NAME, LOCALEDIR);
-	LOGD("teredo_startup\n");
-
 #ifdef MIREDO_TEREDO_CLIENT
-		LOGD("teredo_startup MIREDO_TEREDO_CLIENT\n");
 	(void)use_client;
 #else
-		LOGD("teredo_startup !MIREDO_TEREDO_CLIENT\n");
 	if (use_client)
 		return -1;
 #endif
